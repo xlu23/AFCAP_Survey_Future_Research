@@ -54,7 +54,7 @@ raw_data <- rename(x = raw_data,
                                 "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "need.research.comments",
                                 "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.women" = "crashes.disproportionately.impact.women",
                                 "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.children" = "crashes.disproportionately.impact.kids",
-                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa...." = "most.pressing.accessibility",
+                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa..." = "most.pressing.accessibility",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.maternal.pre.natal.care" = "access.maternal.care",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.general.preventitive.care" = "access.general.care",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.pediatric.care" = "access.pediatric.care",
@@ -69,7 +69,7 @@ raw_data <- rename(x = raw_data,
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Connectivity.to.service.sector.employment.in.nearby.populated.areas" = "access.labor.market",
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Natural.resource.extraction" = "access.natural.resources",
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Comments." = "econ.access.comments",
-                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em...." = "inadequate.attention.dust",
+                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em..." = "inadequate.attention.dust",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Individuals.in.the.immediate.roadway.environment..pedestrians..cyclists." = "air.pollution.vulnerable.users",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Occupants.of.residences.and.business.operations.close.to.the.roadway....300m." = "air.pollution.local.residents.businesses",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Vehicle.passengers..cars..buses..minibuses..motorcyclists." = "air.pollution.vehicle.passengers",
@@ -77,7 +77,6 @@ raw_data <- rename(x = raw_data,
                                 "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Building.rural.roads" = "PCS.building.roads",
                                 "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Provision.of.transport.services" = "PCS.transport.provision",
                                 "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Comments." = "PCS.comments"))
-
 
 
 
@@ -110,7 +109,9 @@ raw_data <- rename(x = raw_data,
                 sep='')
 
   for(i in 1:length(URLs)){
-  
+
+    i=1
+    
     # Query IP location page
     webpages <- readLines(URLs[i])
   
@@ -137,7 +138,7 @@ raw_data <- rename(x = raw_data,
                                               format = "%m/%d/%Y %T"))
   raw_data$survey.length.of.time <- (raw_data$EndDate - raw_data$StartDate)
 
-summary(raw_data$StartDate)
+raw_data$
 
 #   # Countries that respondents have experience in
 #   
