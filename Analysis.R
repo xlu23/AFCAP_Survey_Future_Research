@@ -23,44 +23,50 @@ library(arules)
 library(arulesViz)
 library(lattice)
 library(dendextend)
+library(gmodels)
 
 
-## LOAD DATA
-data <- read.csv("/home/ubuntu/modified_data using joint ranks.csv", header = TRUE, na.strings = "missing")
+
+
+
+# READ DATA ---------------------------------------------------------------
+
+load('/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData')
 
   # Drop 'interested in answering one last question'
   data <- data[, -grep("Interested", names(data))]
-  data <- data[, -grep("length", names(data))]
 
   # Drop PCS questions for this paper
   data <- data[, -grep("PCS", names(data))]
 
 
 
-  round(x=table(data$access.from.continent) / nrow(data), 
-        digits=2)
-  
-  round(x=table(data$access.from.country) / nrow(data), 
-        digits=2)
+
+
+
+# DESCRIBE DATA -----------------------------------------------------------
+
+
+  # Where are the respondents?
+  sort( 100 * round(table(data$access_from_continent) / nrow(data), digits=2), decreasing = TRUE)
+  sort( 100 * round(table(data$access_from_country) / nrow(data), digits=2), decreasing = TRUE)
 
 
   # Survey collection dates
   summary( as.Date(data$StartDate) )
-    
+  
+
   # Time to take the survey (minutes)
   summary( as.numeric(data$survey_length_of_time) )
-    
-  # Good participation (% that agreed to answer a few questions)
-  100 * round( mean( as.character(data$Interested_in_answering_one_last_question_) == 'Yes', na.rm = TRUE), 2)
+  
 
   # Bivariate relationships
-  library(gmodels)
-  CrossTable(data$research.school.pedestrian, data$access.from.continent, chisq=T)
-  table(data$access.goods2market)
+  CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
+  table(data$access_goods2market)
 
-  table(data$specialty, data$need.research.DUI)
-  table(data$need.research.aggressive.driving, data$inadequate.attention.dust)
-  table(data$need.research.DUI, data$specialty)
+  table(data$specialty, data$need_research_DUI)
+  table(data$need.research_aggressive_driving, data$inadequate_attention_dust)
+  table(data$need.research_DUI, data$specialty)
 
   # Hierarchical clustering
   # don't include country where the survey was taken

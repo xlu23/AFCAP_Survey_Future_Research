@@ -23,12 +23,13 @@ library(XML)
 library(plyr)
 library(sqldf)
 library(xlsx)
+library(stringr)
 
 
 
 
 ##  LOAD THE DATA
-raw_data <- read.csv(file = "/home/ubuntu/Sheet_1.csv", header = TRUE, na.strings = "")
+raw_data <- read.csv(file = "/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/CSV/Sheet_1.csv", header = TRUE, na.strings = "")
 
 
 ##  CURRENT VARIABLE NAMES ARE SO LONG.  RENAME SO THEY'RE EASIER TO WORK WITH.
@@ -54,7 +55,7 @@ raw_data <- rename(x = raw_data,
                                 "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "need.research.comments",
                                 "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.women" = "crashes.disproportionately.impact.women",
                                 "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.children" = "crashes.disproportionately.impact.kids",
-                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa..." = "most.pressing.accessibility",
+                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa...." = "most.pressing.accessibility",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.maternal.pre.natal.care" = "access.maternal.care",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.general.preventitive.care" = "access.general.care",
                                 "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.pediatric.care" = "access.pediatric.care",
@@ -69,7 +70,7 @@ raw_data <- rename(x = raw_data,
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Connectivity.to.service.sector.employment.in.nearby.populated.areas" = "access.labor.market",
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Natural.resource.extraction" = "access.natural.resources",
                                 "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Comments." = "econ.access.comments",
-                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em..." = "inadequate.attention.dust",
+                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em...." = "inadequate.attention.dust",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Individuals.in.the.immediate.roadway.environment..pedestrians..cyclists." = "air.pollution.vulnerable.users",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Occupants.of.residences.and.business.operations.close.to.the.roadway....300m." = "air.pollution.local.residents.businesses",
                                 "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Vehicle.passengers..cars..buses..minibuses..motorcyclists." = "air.pollution.vehicle.passengers",
@@ -104,41 +105,40 @@ raw_data <- rename(x = raw_data,
 ## ADD VARIABLES
 
   # Use IP address to identify respondent's current continent and country
-  URLs <- paste('http://www.ipgeek.org/',
-                as.character(raw_data$IP.Address),
-                sep='')
+  URLs <- paste0('http://www.ipgeek.net/',
+                 as.character(raw_data$IP.Address))
 
   for(i in 1:length(URLs)){
-
-    i=1
     
     # Query IP location page
-    webpages <- readLines(URLs[i])
-  
-    # Find line with country information
-    country.row.number <- grep(pattern = "country", x = webpages, ignore.case = TRUE)
-    continent.row.number <- grep(pattern = "continent", x = webpages, ignore.case = TRUE)
-  
-    # Extract country name from text
-    temp1 <- strsplit(x = webpages[ country.row.number ], split = "<td>")[[1]][2]
-    raw_data$access.from.country[i] <- strsplit(x = temp1, split = " <img src")[[1]][1]
-  
-    # Extract continent name from text
-    temp2 <- strsplit(x = webpages[ continent.row.number ], split = "<td>")[[1]][2]
-    raw_data$access.from.continent[i] <- strsplit(x = temp2, split = "</td>")[[1]][1]
-  
+    webpages <- getURL(URLs[i])
+
+    # Extract country info
+    temp1 <- gregexpr("<th>Country:</th><td>", webpages)[[1]]
+    temp2 <- gregexpr(" <img src=\"/flag", webpages)[[1]]
+    raw_data$access.from.country[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1])
+      raw_data$access.from.country[i] <- str_trim(raw_data$access.from.country[i])
+
+    # Extract continent info
+    temp1 <- gregexpr("<th>Continent:</th><td>", webpages)[[1]]
+    temp2 <- gregexpr("</td></tr>\r\n<tr><th colspan=2>", webpages)[[1]]
+    raw_data$access.from.continent[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1] - 1)
+      raw_data$access.from.continent[i] <- str_trim(raw_data$access.from.continent[i])
+    
+    Sys.sleep(3)
+    
   }
 
+  # Website does not report continent for the Americas
+  raw_data$access.from.continent[ raw_data$access.from.continent == 'NA' ] <- 'AM'
 
 
   # Calculate time that respondent spent on the survey
-  raw_data$StartDate <- as.POSIXct(x = strptime(x = raw_data$StartDate,
-                                                format = "%m/%d/%Y %T"))
-  raw_data$EndDate <- as.POSIXct(x = strptime(x = raw_data$EndDate, 
-                                              format = "%m/%d/%Y %T"))
+
+  raw_data$StartDate <- as.POSIXct(x = strptime(x = raw_data$StartDate, format = "%m/%d/%Y %T"))
+  raw_data$EndDate <- as.POSIXct(x = strptime(x = raw_data$EndDate, format = "%m/%d/%Y %T"))
   raw_data$survey.length.of.time <- (raw_data$EndDate - raw_data$StartDate)
 
-raw_data$
 
 #   # Countries that respondents have experience in
 #   
@@ -200,34 +200,22 @@ three_level_data <- sqldf("SELECT   vulnerable_users_most_dangerous,
 
   # Change variable types where necessary
   three_level_data$vulnerable_users_most_dangerous <- ordered(three_level_data$vulnerable_users_most_dangerous,
-                                                              levels = c("Least dangerous",
-                                                                         "Dangerous",
-                                                                         "Most dangerous"))
+                                                              levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
   three_level_data$buses_most_dangerous <- ordered(three_level_data$buses_most_dangerous,
-                                                   levels = c("Least dangerous",
-                                                              "Dangerous",
-                                                              "Most dangerous"))
+                                                   levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
   three_level_data$motorcycles_most_dangerous <- ordered(three_level_data$motorcycles_most_dangerous,
-                                                         levels = c("Least dangerous",
-                                                                    "Dangerous",
-                                                                    "Most dangerous"))
+                                                         levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
   three_level_data$air_pollution_vulnerable_users <- ordered(three_level_data$air_pollution_vulnerable_users,
-                                                             levels = c("Least vulnerable",
-                                                                        "Vulnerable",
-                                                                        "Most vulnerable"))
+                                                             levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
   three_level_data$air_pollution_local_residents_businesses <- ordered(three_level_data$air_pollution_local_residents_businesses,
-                                                                       levels = c("Least vulnerable",
-                                                                                  "Vulnerable",
-                                                                                  "Most vulnerable"))
+                                                                       levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
   three_level_data$air_pollution_vehicle_passengers <- ordered(three_level_data$air_pollution_vehicle_passengers,
-                                                               levels = c("Least vulnerable",
-                                                                          "Vulnerable",
-                                                                          "Most vulnerable"))
+                                                               levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
 
 # Grab five-level variables
@@ -432,11 +420,9 @@ data <- data.frame(respondent_data,
                    two_level_data,
                    three_level_data,
                    five_level_data)
-three_level_data$vulnerable_users_most_dangerous
-data$vulnerable_users_most_dangerous
 
 
 ## SAVE DATA FOR ANALYSIS
 ## Use RData format to preserve ordered variables (CSV does not retain that information)
-save(data, file = '/home/rstudio/analysis.RData', ascii = TRUE)
+save(data, '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
 
