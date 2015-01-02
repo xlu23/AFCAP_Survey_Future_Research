@@ -47,8 +47,13 @@ load('/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analys
 # DESCRIBE DATA -----------------------------------------------------------
 
 
+  # Number of observations
+  nrow(data)
+
+
   # Where are the respondents?
   sort( 100 * round(table(data$access_from_continent) / nrow(data), digits=2), decreasing = TRUE)
+  length( unique(data$access_from_country) )
   sort( 100 * round(table(data$access_from_country) / nrow(data), digits=2), decreasing = TRUE)
 
 
@@ -65,12 +70,52 @@ load('/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analys
   table(data$access_goods2market)
 
   table(data$specialty, data$need_research_DUI)
-  table(data$need.research_aggressive_driving, data$inadequate_attention_dust)
-  table(data$need.research_DUI, data$specialty)
+  table(data$need_research_aggressive_driving, data$inadequate_attention_dust)
+  table(data$need_research_DUI, data$specialty)
 
-  # Hierarchical clustering
-  # don't include country where the survey was taken
-  # the algorithm crashes when we include it
+
+
+
+
+# PREPROCESSING -----------------------------------------------------------
+
+##  Clustering and association rules require categorical variables
+discrete_data <- data
+  discrete_data$StartDate <- discretize(as.numeric(discrete_data$StartDate), "frequency", ordered = T)
+  discrete_data$survey_length_of_time <- discretize(discrete_data$survey_length_of_time, "frequency", ordered = T)
+
+##  Drop start date and length of survey
+discrete_data <- discrete_data[, -grep("Start", names(discrete_data))]
+discrete_data <- discrete_data[, -grep("length", names(discrete_data))]
+
+
+# Hierarchical clustering
+# don't include country where the survey was taken
+# the algorithm crashes when we include it
+hclust <- hclustvar(X.quali = discrete_data[, -grep("country", names(discrete_data))])
+stability(hclust, B=25)
+cutree(hclust, k=3)
+
+cutreevar(hclust, k=3)
+pdf("dendrogram.pdf")
+par(mar=c(1,8,0,1))
+plot(hclust, main="", ylab="") 
+mtext("                                                                           height", side=2, line=2.4)
+mtext('Cluster Analysis Dendrogram', side=2, font=2, cex=1.5, line=5)
+dev.off()
+
+
+rules <- apriori(data, parameter = list(supp = 0.025, conf = 1))
+options(digits=2)
+
+
+
+
+
+
+# ANALYSIS ----------------------------------------------------------------
+
+  
   names(data) <- c("Professional Affiliation",
                    "Professional Specialty",
                    "Dangerous Transport Modes",
@@ -93,7 +138,13 @@ load('/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analys
                    "Rank Groups Most Vulnerable to Air Pollution",
                    "Access from Country",
                    "Access from Continent")
-  hclust <- hclustvar(X.quali = data[, -c(21)])
+  
+
+
+  # Hierarchical clustering
+  # don't include country where the survey was taken
+  # the algorithm crashes when we include it
+  hclust <- hclustvar(X.quali = data[, -grep("country", names(data))])
   stability(hclust, B=25)
   cutree(hclust, k=3)
 

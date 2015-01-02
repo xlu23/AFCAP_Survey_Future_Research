@@ -34,50 +34,52 @@ raw_data <- read.csv(file = "/Users/User/Dropbox/transport and conflict/Stones s
 
 ##  CURRENT VARIABLE NAMES ARE SO LONG.  RENAME SO THEY'RE EASIER TO WORK WITH.
 raw_data <- rename(x = raw_data, 
-                   replace = c( "In.what.SSA.countries.do.you.have.professional.experience....Open.Ended.Response" = "countries.experience", 
-                                "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one." = "affiliaiton",
-                                "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one....Other..please.specify." = "affiliation_other",
-                                "Which.of.the.following.best.describes.your.professional.specialty...please.check.only.one." = "specialty",
-                                "Which.of.the.following.best.describes.your.professional.specialty...please.check.only.one....Other..please.specify." = "specialty_other",
-                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Vulnerable.road.users..pedestrians..bicyclists..pushcarts..animal.carts..etc.." = "vulnerable.users.most.dangerous",
-                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Transport.services..buses.and.minibuses." = "buses.most.dangerous",
-                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Motorcycles..including.motorcycle.taxis." = "motorcycles.most.dangerous",
-                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Comments." = "most.dangerous.comments",
-                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Condition.of.travelway..e.g...potholes.and.ruts.that.can.cause.vehicles.to.lose.control.or.encourage.drivers.to.leave.their.travel.lane.to.avoid.hitting" = "need.research.travelway.condition",
-                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Lack.of.adequate.signage..e.g...warning.signs.for.horizontal.curves.or.other.approaching.hazards." = "need.research.signage",
-                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Dust.from.unpaved.roads.obscuring.visibility.or.resulting.in.risky.driving.behavior..e.g...overtaking.vehicles.to.avoid.following.along.in.their.dust." = "need.research.dust",
-                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Other..please.specify." = "need.research.other",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Aggressive.driving..speeding..overtaking." = "need.research.aggressive.driving",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Driving.under.the.influence..alcohol..drugs." = "need.research.DUI",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Distracted.driving..texting..talking.on.mobile.phones." = "need.research.distracted.driving",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Non.use.of.safety.equipment..seatbelts..helmets..child.restraints." = "need.research.nonuse.safety.equipment",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Poor.driving..education.experience..licensing.regulation." = "need.research.education.regulation",
-                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "need.research.comments",
-                                "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.women" = "crashes.disproportionately.impact.women",
-                                "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.children" = "crashes.disproportionately.impact.kids",
-                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa...." = "most.pressing.accessibility",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.maternal.pre.natal.care" = "access.maternal.care",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.general.preventitive.care" = "access.general.care",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.pediatric.care" = "access.pediatric.care",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.disease.chronic.condition.care" = "access.chronic.care",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.emergency.trauma.care" = "access.trauma.care",
-                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Comments." = "access.comments",
-                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Safety.education.awareness.for.children.and.parents" = "research.safety.education",
-                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Provision.of.transport.servcies.for.schoolchildren" = "research.school.transport",
-                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Provision.of.safer.pedestrian.facilities" = "research.school.pedestrian",
-                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "research.education.comments",
-                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Transport.of.agricultural.goods.to.market" = "access.goods2market",
-                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Connectivity.to.service.sector.employment.in.nearby.populated.areas" = "access.labor.market",
-                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Natural.resource.extraction" = "access.natural.resources",
-                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Comments." = "econ.access.comments",
-                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em...." = "inadequate.attention.dust",
-                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Individuals.in.the.immediate.roadway.environment..pedestrians..cyclists." = "air.pollution.vulnerable.users",
-                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Occupants.of.residences.and.business.operations.close.to.the.roadway....300m." = "air.pollution.local.residents.businesses",
-                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Vehicle.passengers..cars..buses..minibuses..motorcyclists." = "air.pollution.vehicle.passengers",
-                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Comments." = "air.pollution.comments",
-                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Building.rural.roads" = "PCS.building.roads",
-                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Provision.of.transport.services" = "PCS.transport.provision",
-                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Comments." = "PCS.comments"))
+                   replace = c( "StartDate" = "Start Date",
+                                "EndDate" = "End Date",
+                                "In.what.SSA.countries.do.you.have.professional.experience....Open.Ended.Response" = "Experience in Countries", 
+                                "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one." = "Professional Affiliation",
+                                "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one....Other..please.specify." = "Other Affiliation",
+                                "Which.of.the.following.best.describes.your.professional.specialty...please.check.only.one." = "Professional Specialty",
+                                "Which.of.the.following.best.describes.your.professional.specialty...please.check.only.one....Other..please.specify." = "Other Specialty",
+                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Vulnerable.road.users..pedestrians..bicyclists..pushcarts..animal.carts..etc.." = "Danger: Vulnerable Road Users",
+                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Transport.services..buses.and.minibuses." = "Danger: Buses",
+                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Motorcycles..including.motorcycle.taxis." = "Danger: Motorcycles",
+                                "In.your.opinion..which.of.the.following.transport.modes.is.the.most.dangerous.in.rural.Africa....Comments." = "Danger: Comments",
+                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Condition.of.travelway..e.g...potholes.and.ruts.that.can.cause.vehicles.to.lose.control.or.encourage.drivers.to.leave.their.travel.lane.to.avoid.hitting" = "Research Need: Travelway Condition",
+                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Lack.of.adequate.signage..e.g...warning.signs.for.horizontal.curves.or.other.approaching.hazards." = "Research Need: Signage",
+                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Dust.from.unpaved.roads.obscuring.visibility.or.resulting.in.risky.driving.behavior..e.g...overtaking.vehicles.to.avoid.following.along.in.their.dust." = "Research Need: Dust",
+                                "To.the.extent.that.road.conditions.contribute.to.rural.road.crashes.in.Africa..which.of.the.following.issues.need..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Other..please.specify." = "Research Need: Other",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Aggressive.driving..speeding..overtaking." = "Research Need: Aggressive Driving",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Driving.under.the.influence..alcohol..drugs." = "Research Need: DUI",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Distracted.driving..texting..talking.on.mobile.phones." = "Research Need: Distracted Driving",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Non.use.of.safety.equipment..seatbelts..helmets..child.restraints." = "Research Need: Non-Use of Safety Equipment",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Poor.driving..education.experience..licensing.regulation." = "Research Need: Education & Regulation",
+                                "To.the.extent.that.risky.driving.behaviors.contribute.to.rural.road.crashes..which.of.the.following.potential.causal.factors.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "Research Need: Comments",
+                                "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.women" = "Crashes Disproportionately Impact Women",
+                                "To.what.extent.do.you.agree.with.the.following.statements....Rural.road.crashes.disproportionately.impact.children" = "Crashes Disproportionately Impact Children",
+                                "Which.of.the.following.do.you.consider.to.be.the.most.pressing.accessibility.issue.in.rural.Africa...." = "Most Pressing Accessibility Issue",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.maternal.pre.natal.care" = "Healthcare Access: Maternal",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.general.preventitive.care" = "Healthcare Access: General",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.pediatric.care" = "Healthcare Access: Pediatric",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.disease.chronic.condition.care" = "Healthcare Access: Chronic",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Access.to.emergency.trauma.care" = "Healthcare Access: Trauma",
+                                "With.regard.to.the.role.transport.plays.in.healthcare.accessibility.in.rural.Africa..please.rank.the.following.issues.according.to.need.for..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention..5...highest.need.....Comments." = "Healthcare Access: Comments",
+                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Safety.education.awareness.for.children.and.parents" = "Education Access: Safety Education",
+                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Provision.of.transport.servcies.for.schoolchildren" = "Education Access: School Transport",
+                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Provision.of.safer.pedestrian.facilities" = "Education Access: Pedestrian Facilities",
+                                "With.regard.to.the.role.transport.plays.in.education.accessibility.in.rural.Africa..which.of.the.following.issues.need.immediate..span.style..text.decoration..underline....em..strong.research..strong...em...span..attention....Comments." = "Education Access: Comments",
+                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Transport.of.agricultural.goods.to.market" = "Economic Access: Goods to Market",
+                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Connectivity.to.service.sector.employment.in.nearby.populated.areas" = "Economic Access: Connectivity to Employment",
+                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Natural.resource.extraction" = "Economic Access: Natural-Resource Extraction",
+                                "With.regard.to.the.role.transport.plays.in.economic.accessibility.in.rural.Africa..which.of.the.following.issues.most.affect..or.are.affected.by..road.safety....Comments." = "Economic Access: Comments",
+                                "To.what.extent.do.you.agree.with.the.following.statement...br..br..em.Dust.and.other.air.pollution.from.rural.roads.in.Africa.have.not.received.adequate.attention.from.the.research.and.policy.communities...em...." = "Inadequate Attention: Dust",
+                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Individuals.in.the.immediate.roadway.environment..pedestrians..cyclists." = "Air Pollution: Vulnerable Users",
+                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Occupants.of.residences.and.business.operations.close.to.the.roadway....300m." = "Air Pollution: Local Residents/Businesses",
+                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Vehicle.passengers..cars..buses..minibuses..motorcyclists." = "Air Pollution: Vehicle Passengers",
+                                "In.your.opinion..which.of.the.following.groups.are.most.at.risk.due.to.air.pollution.in..em..span.style..text.decoration..underline....strong.rural..strong...span...em..Africa....Comments." = "Air Pollution: Comments",
+                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Building.rural.roads" = "Peace/Stability: Building Roads",
+                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Provision.of.transport.services" = "Peace/Stability: Transport Provision",
+                                "To.what.extent.do.you.think.the.following.play.a.role.in.promoting.stability.in.fragile.and.conflict.affected.regions.in.rural.Africa....Comments." = "Peace/Stability: Comments"))
 
 
 
@@ -87,15 +89,15 @@ raw_data <- rename(x = raw_data,
   # Identify the surveys that share an IP address
   temp <- rbind( subset(x=raw_data, subset=duplicated(raw_data$IP.Address, fromLast=TRUE)),
                  subset(x=raw_data, subset=duplicated(raw_data$IP.Address, fromLast=FALSE)) )
-  #View( temp[ order(temp$IP.Address, temp$StartDate), ] )
+  #View( temp[ order(temp$IP.Address, temp$"Start Date"), ] )
 
   # There are three sets of responses that originate from the same IP address
   # at the exact same second, but one of the responses includes a value for one of
   # the questions (healthcare accessibility, maternal and prenatal care) while the 
   # other does not.  Drop the observation that is missing a value for that question.
   raw_data <- subset(x=raw_data, 
-                     subset= !duplicated(cbind(raw_data$StartDate, raw_data$IP.Address)) |
-                             !is.na(raw_data$access.maternal.care))
+                     subset= !duplicated(cbind(raw_data$"Start Date", raw_data$IP.Address)) |
+                             !is.na(raw_data$"Healthcare Access: Maternal"))
 
 
 
@@ -116,54 +118,29 @@ raw_data <- rename(x = raw_data,
     # Extract country info
     temp1 <- gregexpr("<th>Country:</th><td>", webpages)[[1]]
     temp2 <- gregexpr(" <img src=\"/flag", webpages)[[1]]
-    raw_data$access.from.country[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1])
-      raw_data$access.from.country[i] <- str_trim(raw_data$access.from.country[i])
+    raw_data$"Access from Country"[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1])
+      raw_data$"Access from Country"[i] <- str_trim(raw_data$"Access from Country"[i])
 
     # Extract continent info
     temp1 <- gregexpr("<th>Continent:</th><td>", webpages)[[1]]
     temp2 <- gregexpr("</td></tr>\r\n<tr><th colspan=2>", webpages)[[1]]
-    raw_data$access.from.continent[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1] - 1)
-      raw_data$access.from.continent[i] <- str_trim(raw_data$access.from.continent[i])
+    raw_data$"Access from Continent"[i] <- substring(webpages, temp1[1] + attr(temp1, which = "match.length"), temp2[1] - 1)
+      raw_data$"Access from Continent"[i] <- str_trim(raw_data$"Access from Continent"[i])
     
     Sys.sleep(3)
     
   }
 
   # Website does not report continent for the Americas
-  raw_data$access.from.continent[ raw_data$access.from.continent == 'NA' ] <- 'AM'
+  raw_data$"Access from Continent"[ raw_data$"Access from Continent" == 'NA' ] <- 'AM'
 
 
   # Calculate time that respondent spent on the survey
 
   raw_data$StartDate <- as.POSIXct(x = strptime(x = raw_data$StartDate, format = "%m/%d/%Y %T"))
   raw_data$EndDate <- as.POSIXct(x = strptime(x = raw_data$EndDate, format = "%m/%d/%Y %T"))
-  raw_data$survey.length.of.time <- (raw_data$EndDate - raw_data$StartDate)
+  raw_data$"Survey Length of Time" <- (raw_data$EndDate - raw_data$StartDate)
 
-
-#   # Countries that respondents have experience in
-#   
-#     # First identify SSA countries
-#     SSA.Wikipedia <- getURL(url = 'http://en.wikipedia.org/wiki/Sub-Saharan_Africa')
-#     SSA.countries <- as.character( readHTMLTable(doc=SSA.Wikipedia)[[1]]$Country )
-# 
-#     # Create a matrix for dummy coding
-#     SSA.matrix <- matrix(data=0, 
-#                          nrow=nrow(data),
-#                          ncol=length(SSA.countries))
-#       colnames(SSA.matrix) <- sort(SSA.countries)
-# 
-#     # Cycle through each respondent and country, marking the countries that the respondent has professional experience in
-#     for(i in 1:nrow(SSA.matrix)){     # respondent
-#       for(j in 1:ncol(SSA.matrix)){   # country
-# 
-#         temp <- pmatch(x = colnames(SSA.matrix)[j], 
-#                        table = as.character( data$In.what.SSA.countries.do.you.have.professional.experience....Open.Ended.Response[i] ))
-#         if( !is.na(temp) )  SSA.matrix[i,j] <- 1
-#         
-#       }
-#     }
-# 
-#     sum(SSA.matrix)
 
 
   # Some variables should be combined into a single rank variable
@@ -172,14 +149,14 @@ raw_data <- rename(x = raw_data,
 
 
 ## PREPROCESSING
-
+names(raw_data)
 # Grab respondent variables
-respondent_data <- sqldf("SELECT  affiliaiton,
-                                  specialty,
-                                  access_from_continent,
-                                  access_from_country,
+respondent_data <- sqldf("SELECT  'Professional Affiliation',
+                                  'Professional Specialty',
+                                  'Access from Continent',
+                                  'Access from Country',
                                   StartDate,
-                                  survey_length_of_time
+                                  'Survey Length of Time'
                           FROM    raw_data")
 
 
@@ -188,33 +165,33 @@ two_level_data <- sqldf("SELECT Interested_in_answering_one_last_question_
                          FROM   raw_data")
 
 # Grab three-level variables
-three_level_data <- sqldf("SELECT   vulnerable_users_most_dangerous,
-                                    buses_most_dangerous,
-                                    motorcycles_most_dangerous,
-                                    most_pressing_accessibility,
-                                    inadequate_attention_dust,
-                                    air_pollution_vulnerable_users,
-                                    air_pollution_local_residents_businesses,
-                                    air_pollution_vehicle_passengers
+three_level_data <- sqldf("SELECT   'Danger: Vulnerable Road Users',
+                                    'Danger: Buses',
+                                    'Danger: Motorcycles',
+                                    'Most Pressing Accessibility Issue',
+                                    'Inadequate Attention: Dust',
+                                    'Air Pollution: Vulnerable Users',
+                                    'Air Pollution: Local Residents/Businesses',
+                                    'Air Pollution: Vehicle Passengers'
                             FROM    raw_data")
 
   # Change variable types where necessary
-  three_level_data$vulnerable_users_most_dangerous <- ordered(three_level_data$vulnerable_users_most_dangerous,
+  three_level_data$vulnerable_users_most_dangerous <- ordered(three_level_data$"Danger: Vulnerable Road Users",
                                                               levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
-  three_level_data$buses_most_dangerous <- ordered(three_level_data$buses_most_dangerous,
+  three_level_data$buses_most_dangerous <- ordered(three_level_data$"Danger: Buses",
                                                    levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
-  three_level_data$motorcycles_most_dangerous <- ordered(three_level_data$motorcycles_most_dangerous,
+  three_level_data$motorcycles_most_dangerous <- ordered(three_level_data$"Danger: Motorcycles",
                                                          levels = c("Least dangerous", "Dangerous", "Most dangerous"))
 
-  three_level_data$air_pollution_vulnerable_users <- ordered(three_level_data$air_pollution_vulnerable_users,
+  three_level_data$air_pollution_vulnerable_users <- ordered(three_level_data$"Air Pollution: Vulnerable Users",
                                                              levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
-  three_level_data$air_pollution_local_residents_businesses <- ordered(three_level_data$air_pollution_local_residents_businesses,
+  three_level_data$air_pollution_local_residents_businesses <- ordered(three_level_data$"Air Pollution: Local Residents/Businesses",
                                                                        levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
-  three_level_data$air_pollution_vehicle_passengers <- ordered(three_level_data$air_pollution_vehicle_passengers,
+  three_level_data$air_pollution_vehicle_passengers <- ordered(three_level_data$"Air Pollution: Vehicle Passengers",
                                                                levels = c("Least vulnerable", "Vulnerable", "Most vulnerable"))
 
 
@@ -424,5 +401,5 @@ data <- data.frame(respondent_data,
 
 ## SAVE DATA FOR ANALYSIS
 ## Use RData format to preserve ordered variables (CSV does not retain that information)
-save(data, '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
+save(data, file = '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
 
