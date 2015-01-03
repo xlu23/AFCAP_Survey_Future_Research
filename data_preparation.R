@@ -153,7 +153,7 @@
   
   raw_data$StartDate <- as.POSIXct(x = strptime(x = raw_data$StartDate, format = "%m/%d/%Y %T"))
   raw_data$EndDate <- as.POSIXct(x = strptime(x = raw_data$EndDate, format = "%m/%d/%Y %T"))
-  raw_data$survey_length_of_time <- (raw_data$EndDate - raw_data$StartDate)
+  raw_data$survey_length_of_time <- as.numeric(raw_data$EndDate - raw_data$StartDate)
 
 
 
@@ -174,8 +174,7 @@
                                     StartDate,
                                     survey_length_of_time
                            FROM    raw_data")
-  
-  
+    
   # Grab two-level variables
   two_level_data <- sqldf("SELECT Interested_in_answering_one_last_question_
                            FROM   raw_data")
