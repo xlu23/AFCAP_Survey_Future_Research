@@ -276,107 +276,50 @@
   
   # Identify missing values, change variable types where necessary
   five_level_data$need_research_condition_of_travelway <- ordered(five_level_data$need_research_condition_of_travelway,
-                                                                  levels = c("Very unimportant",
-                                                                             "Unimportant",
-                                                                             "Moderately important",
-                                                                             "Important",
-                                                                             "Very important"))
+                                                                  levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
   
   five_level_data$need_research_dust_from_unpaved_roads <- ordered(five_level_data$need_research_dust_from_unpaved_roads,
-                                                                   levels = c("Very unimportant",
-                                                                              "Unimportant",
-                                                                              "Moderately important",
-                                                                              "Important",
-                                                                              "Very important"))
-                      
+                                                                   levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$need_research_aggressive_driving <- ordered(five_level_data$need_research_aggressive_driving,
-                                                              levels = c("Very unimportant",
-                                                                         "Unimportant",
-                                                                         "Moderately important",
-                                                                         "Important",
-                                                                         "Very important"))
-  
+                                                              levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$need_research_DUI <- ordered(five_level_data$need_research_DUI,
-                                               levels = c("Very unimportant",
-                                                          "Unimportant",
-                                                          "Moderately important",
-                                                          "Important",
-                                                          "Very important"))
-  
+                                               levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$need_research_distracted_driving <- ordered(five_level_data$need_research_distracted_driving,
-                                                              levels = c("Very unimportant",
-                                                                         "Unimportant",
-                                                                         "Moderately important",
-                                                                         "Important",
-                                                                         "Very important"))
-  
+                                                              levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$need_research_nonuse_safety_equipment <- ordered(five_level_data$need_research_nonuse_safety_equipment,
-                                                                   levels = c("Very unimportant",
-                                                                              "Unimportant",
-                                                                              "Moderately important",
-                                                                              "Important",
-                                                                              "Very important"))
-  
+                                                                   levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$need_research_poor_driving <- ordered(five_level_data$need_research_poor_driving,
-                                                        levels = c("Very unimportant",
-                                                                   "Unimportant",
-                                                                   "Moderately important",
-                                                                   "Important",
-                                                                   "Very important"))
-  
+                                                        levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$education_need_research_safety_education_awareness <- ordered(five_level_data$education_need_research_safety_education_awareness,
-                                                                                levels = c("Very unimportant",
-                                                                                           "Unimportant",
-                                                                                           "Moderately important",
-                                                                                           "Important",
-                                                                                           "Very important"))
-  
+                                                                                levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$education_need_provision_of_pedestrian_facilities <- ordered(five_level_data$education_need_provision_of_pedestrian_facilities,
-                                                                               levels = c("Very unimportant",
-                                                                                          "Unimportant",
-                                                                                          "Moderately important",
-                                                                                          "Important",
-                                                                                          "Very important"))
-  
+                                                                               levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$education_need_research_provision_of_transport_services <- ordered(five_level_data$education_need_research_provision_of_transport_services,
-                                                                                     levels = c("Very unimportant",
-                                                                                                "Unimportant",
-                                                                                                "Moderately important",
-                                                                                                "Important",
-                                                                                                "Very important"))
-  
+                                                                                     levels = c("Very unimportant", "Unimportant", "Moderately important", "Important", "Very important"))
+
   five_level_data$crashes_disproportionately_impact_women <- ordered(five_level_data$crashes_disproportionately_impact_women,
-                                                                     levels = c("Strongly Disagree",
-                                                                                "Disagree",
-                                                                                "Neither Disagree Nor Agree",
-                                                                                "Agree",
-                                                                                "Strongly Agree"))
+                                                                     levels = c("Strongly Disagree", "Disagree", "Neither Disagree Nor Agree", "Agree", "Strongly Agree"))
   
   five_level_data$crashes_disproportionately_impact_kids <- ordered(five_level_data$crashes_disproportionately_impact_kids,
-                                                                    levels = c("Strongly Disagree",
-                                                                               "Disagree",
-                                                                               "Neither Disagree Nor Agree",
-                                                                               "Agree",
-                                                                               "Strongly Agree"))
-  
+                                                                    levels = c("Strongly Disagree", "Disagree", "Neither Disagree Nor Agree", "Agree", "Strongly Agree"))
+
   five_level_data$economic_access_agriculture2market <- ordered(five_level_data$access_goods2market,
-                                                                levels = c("No relationship",
-                                                                           "Indirect relationship",
-                                                                           "Direct relationship",
-                                                                           "Strong relationship"))
+                                                                levels = c("No relationship", "Indirect relationship", "Direct relationship", "Strong relationship"))
   
   five_level_data$economic_access_labor2service_sector <- ordered(five_level_data$economic_access_labor2service_sector,
-                                                                  levels = c("No relationship",
-                                                                             "Indirect relationship",
-                                                                             "Direct relationship",
-                                                                             "Strong relationship"))
-  
+                                                                  levels = c("No relationship", "Indirect relationship", "Direct relationship", "Strong relationship"))
+
   five_level_data$economic_access_natural_resource_extraction <- ordered(five_level_data$economic_access_natural_resource_extraction,
-                                                                         levels = c("No relationship",
-                                                                                    "Indirect relationship",
-                                                                                    "Direct relationship",
-                                                                                    "Strong relationship"))
-  
+                                                                         levels = c("No relationship", "Indirect relationship", "Direct relationship", "Strong relationship"))
+
   five_level_data$health_access_maternal_prenatal <- ordered(five_level_data$health_access_maternal_prenatal,
                                                              levels = c(" 1", " 2", " 3", " 4", " 5"))
   
@@ -406,14 +349,17 @@
                                                                 levels(five_level_data$PCS_transport_provision)[1], 
                                                                 levels(five_level_data$PCS_transport_provision)[5]))
 
-# Combine into single dataframe
+  # Combine into single dataframe
+  data <- data.frame(respondent_data, 
+                     two_level_data,
+                     three_level_data,
+                     five_level_data)
 
-data <- data.frame(respondent_data, 
-                   two_level_data,
-                   three_level_data,
-                   five_level_data)
 
 
-## SAVE DATA FOR ANALYSIS
-## Use RData format to preserve ordered variables (CSV does not retain that information)
-save(data, '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
+
+
+# SAVE DATA FOR ANALYSIS --------------------------------------------------
+
+  ## Use RData format to preserve ordered variables (CSV does not retain that information)
+  save(data, '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
