@@ -335,39 +335,72 @@
 
 # SECTION 3 ---------------------------------------------------------------
 
+  ##  This section presents hierarchical clustering and assocation rules.
+  ##  Before we begin these analyses, we need to manipulate the dataset.  
+  ##  StartDate and survey_length_of_time have no analytical utility, so 
+  ##  I begin by dropping them:
+
+  cluster_data <- subset(data, select = which( !(names(data) %in% c("StartDate", "survey_length_of_time")) ))
 
 
+  ##  Replace NAs with 'missing' so they don't get dropped from the analysis
+  #cluster_data[ is.na(cluster_data) ] <- 'missing'
 
 
+  ##  Change variable names for nice plots
+  cluster_data <- rename(cluster_data, c("affiliation" = "Professional Affiliation",
+                                         "specialty" = "Professional Specialty",
+                                         "access_from_continent" = "Access from Continent",
+                                         "access_from_country" = "Access from Country",
+                                         "vulnerable_road_users_most_dangerous" = "Vulnerable Road Users Most Dangerous",
+                                         "transport_services_most_dangerous" = "Transport Services Most Dangerous",
+                                         "motorcycles_most_dangerous" = "Motorcycles Most Dangerous",
+                                         "most_pressing_accessibility_issue" = "Most Pressing Accessibility Issue",
+                                         "inadequate_attention_dust" = "Inadequate Attention to Dust",
+                                         "air_pollution_individuals_in_roadway_environment" = "Air Pollution: Individuals in Roadway Environment at Risk",
+                                         "air_pollution_roadside_residents_businesses" = "Air Pollution: Roadside Residents & Businesses at Risk",
+                                         "air_pollution_vehicle_passengers" = "Air Pollution: Vehicle Passengers at Risk",
+                                         "need_research_condition_of_travelway" = "Need Research (Road): Condition of Travelway & Rural Crashes",
+                                         "need_research_lack_of_adequate_signage" = "Need Research (Road): Dust from Unpaved Roads & Rural Crashes",
+                                         "need_research_dust_from_unpaved_roads" = "Need Research (Road): Aggressive Driving & Rural Crashes",
+                                         "need_research_aggressive_driving" = "Need Research (Driver): Aggressive Driving & Rural Crashes",
+                                         "need_research_DUI" = "Need Research (Driver): DUIs & Rural Crashes",
+                                         "need_research_distracted_driving" = "Need Research (Driver): Distracted Driving & Rural Crashes",
+                                         "need_research_nonuse_safety_equipment" = "Need Research (Driver): Non-Use of Safety Equipment & Rural Crashes",
+                                         "need_research_poor_driving" = "Need Research (Driver): Poor Driving & Rural Crashes",
+                                         "education_need_research_safety_education_awareness" = "Need Research (Education): Safety Education & Awareness for Children & Parents",
+                                         "education_need_provision_of_pedestrian_facilities" = "Need Research (Education): Provision of Pedestrian Facilities",
+                                         "education_need_research_provision_of_transport_services" = "Need Research (Education): Provision of Transport Services",
+                                         "crashes_disproportionately_impact_women" = "Rural Road Crashes Disproportionately Impact Women",
+                                         "crashes_disproportionately_impact_kids" = "Rural Road Crashes Disproportionately Impact Children",
+                                         "economic_access_agriculture2market" = "Road Safety and Transport of Agricultural Goods to Market",
+                                         "economic_access_labor2service_sector" = "Road Safety and Connectivity to Service-Sector Employment",
+                                         "economic_access_natural_resource_extraction" = "Road Safety and Natural Resource Extraction",
+                                         "health_access_maternal_prenatal" = "Need Research (Healthcare): Maternal/Pre-Natal",
+                                         "health_access_general_preventative" = "Need Research (Healthcare): General/Preventative",
+                                         "health_access_pediatric" = "Need Research (Healthcare): Pediatric",
+                                         "health_access_disease_chronic_condition" = "Need Research (Healthcare): Disease/Chronic Condition",
+                                         "health_access_emergency_trauma" = "Need Research (Healthcare): Emergency/Trauma"))
 
-  # Bivariate relationships
-  CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
-  table(data$access_goods2market)
 
-  table(data$specialty, data$need_research_DUI)
-  table(data$need_research_aggressive_driving, data$inadequate_attention_dust)
-  table(data$need_research_DUI, data$specialty)
+  ##  HIERARCHICAL CLUSTERING
 
-
-
-
-
-# PREPROCESSING -----------------------------------------------------------
-
-##  Clustering and association rules require categorical variables
-discrete_data <- data
-  discrete_data$StartDate <- discretize(as.numeric(discrete_data$StartDate), "frequency", ordered = T)
-  discrete_data$survey_length_of_time <- discretize(discrete_data$survey_length_of_time, "frequency", ordered = T)
-
-##  Drop start date and length of survey
-discrete_data <- discrete_data[, -grep("Start", names(discrete_data))]
-discrete_data <- discrete_data[, -grep("length", names(discrete_data))]
-
-
-# Hierarchical clustering
 # don't include country where the survey was taken
 # the algorithm crashes when we include it
-hclust <- hclustvar(X.quali = discrete_data[, -grep("country", names(discrete_data))])
+hclust <- hclustvar(X.quali = cluster_data) #discrete_data[, -grep("country", names(discrete_data))])
+
+table(cluster_data$"Access from Continent",
+      cluster_data$"Need Research (Education): Provision of Pedestrian Facilities")
+
+
+
+
+pdf( paste0(directory, 'plots/cluster.pdf'), height=20, width=20 )
+  par(mar = c(0,4,0,0))
+  plot(hclust, main ="")
+dev.off()
+
+
 stability(hclust, B=25)
 cutree(hclust, k=3)
 
@@ -391,28 +424,6 @@ options(digits=2)
 # ANALYSIS ----------------------------------------------------------------
 
   
-  names(data) <- c("Professional Affiliation",
-                   "Professional Specialty",
-                   "Dangerous Transport Modes",
-                   "Need Research: Travelway Condition",
-                   "Need Research: Roadway Signage",
-                   "Need Research: Dust from Unpaved Roads",
-                   "Need Research: Aggressive Driving",
-                   "Need Research: DUI",
-                   "Need Research: Distracted Driving",
-                   "Need Research: Non-Use of Safety Equipment",
-                   "Need Research: Poor Driving",
-                   "Transport and Healthcare Accessibility",
-                   "Need Research: Road/Travel Safety Education",
-                   "Need Research: Provision of Pedestrian Facilities",
-                   "Need Research: Provision of Transport Services",
-                   "Transport Agricultural Goods to Market",
-                   "Connectivity to Service-Sector Employment",
-                   "Natural Resource Extraction",
-                   "Inadequate Attention to Dust/Air Pollution",
-                   "Rank Groups Most Vulnerable to Air Pollution",
-                   "Access from Country",
-                   "Access from Continent")
   
 
 
@@ -447,6 +458,19 @@ options(digits=2)
 
 
 ## DESCRIPTIVE STATISTICS
+
+
+
+
+
+
+# Bivariate relationships
+CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
+table(data$access_goods2market)
+
+table(data$specialty, data$need_research_DUI)
+table(data$need_research_aggressive_driving, data$inadequate_attention_dust)
+table(data$need_research_DUI, data$specialty)
 
 
 

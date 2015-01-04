@@ -45,8 +45,7 @@
 
 # SHORTEN VARIABLE NAMES --------------------------------------------------
 
-  raw_data <- rename(x = raw_data, 
-                     replace = c( "In.what.SSA.countries.do.you.have.professional.experience....Open.Ended.Response" = "countries_experience", 
+  raw_data <- rename(raw_data, c( "In.what.SSA.countries.do.you.have.professional.experience....Open.Ended.Response" = "countries_experience", 
                                   "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one." = "affiliation",
                                   "Which.of.the.following.best.describes.your.professional.affiliation...please.check.only.one....Other..please.specify." = "affiliation_other",
                                   "Which.of.the.following.best.describes.your.professional.specialty...please.check.only.one." = "specialty",
