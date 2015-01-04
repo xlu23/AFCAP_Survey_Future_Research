@@ -17,13 +17,26 @@
 
 
 
-## LOAD LIBRARIES
-library(ClustOfVar)
-library(arules)
-library(arulesViz)
-library(lattice)
-library(dendextend)
-library(gmodels)
+
+# WORKING DIRECTORY -------------------------------------------------------
+
+  directory <- '/Users/User/Dropbox/transport and conflict/Stones survey paper/'
+
+
+
+
+
+# LOAD LIBRARIES ----------------------------------------------------------
+
+  library(ClustOfVar)
+  library(arules)
+  library(arulesViz)
+  library(lattice)
+  library(dendextend)
+  library(gmodels)
+  library(qpcR)
+
+
 
 
 
@@ -31,39 +44,301 @@ library(gmodels)
 
 # READ DATA ---------------------------------------------------------------
 
-load('/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData')
-
-  # Drop 'interested in answering one last question'
-  data <- data[, -grep("Interested", names(data))]
-
-  # Drop PCS questions for this paper
-  data <- data[, -grep("PCS", names(data))]
-
-
-
-
-
-
-# DESCRIBE DATA -----------------------------------------------------------
-
-
-  # Number of observations
-  nrow(data)
-
-
-  # Where are the respondents?
-  sort( 100 * round(table(data$access_from_continent) / nrow(data), digits=2), decreasing = TRUE)
-  length( unique(data$access_from_country) )
-  sort( 100 * round(table(data$access_from_country) / nrow(data), digits=2), decreasing = TRUE)
-
-
-  # Survey collection dates
-  summary( as.Date(data$StartDate) )
+  load( paste0(directory, '/Data/analysis.RData') )
+  
+    # Drop 'interested in answering one last question'
+    data <- data[, -grep("Interested", names(data))]
+  
+    # Drop PCS questions for this paper
+    data <- data[, -grep("PCS", names(data))]
   
 
-  # Time to take the survey (minutes)
-  summary( as.numeric(data$survey_length_of_time) )
+
+
+
+
+
+# SECTION 2 -----------------------------------------------------------
+
+
+  ##  Introduction
+
+    # Number of observations
+    nrow(data)
   
+    # Where are the respondents?
+    sort( 100 * round(table(data$access_from_continent) / nrow(data), digits=2), decreasing = TRUE)
+    length( unique(data$access_from_country) )
+    sort( 100 * round(table(data$access_from_country) / nrow(data), digits=2), decreasing = TRUE)
+    length( unique(data$access_from_continent) )
+  
+    # Survey collection dates
+    summary( as.Date(data$StartDate) )
+  
+    # Proportion of responses taken in June
+    mean( as.numeric( format(data$StartDate, '%m') ) == 6 )
+
+    # Time to take the survey (minutes)
+    summary( as.numeric(data$survey_length_of_time) )
+
+
+  ##  2.1: Respondent Information
+
+    # Affiliation (%)
+    temp <- 100 * round( sort(table(data$affiliation), decreasing = TRUE) / sum(!is.na(data$affiliation)), 2)
+      names(temp)[ grep("Public safety", names(temp)) ] <- "Public safety/\nlaw enforcement"
+      names(temp)[ grep("Other", names(temp)) ] <- "Other"
+      print(temp)
+    pdf( paste0(directory, "/plots/affiliation.pdf") )
+      par(mar=c(10,4,1,0))
+      barplot(height=temp, ylab="% of respondents", las=2, ylim=c(0,30))
+    dev.off()
+    
+    # Professional speciality
+    temp <- 100 * round( sort(table(data$specialty), decreasing = TRUE) / sum(!is.na(data$specialty)), 2)
+      names(temp)[ grep("Environmental", names(temp)) ] <- "Environmental\nprotection"
+      names(temp)[ grep("Other", names(temp)) ] <- "Other"
+      print(temp)
+    pdf( paste0(directory, "/plots/specialty.pdf") )
+      par(mar=c(7,4,1,0))
+      barplot(temp, ylab="% of respondents", las=2, ylim=c(0,70))
+    dev.off()
+
+
+  ##  2.2: Dangerous Transport Modes
+
+    temp <- cbind("Vulnerable\nRoad Users" = table(data$vulnerable_road_users_most_dangerous),
+                  "Transport\nServices" = table(data$transport_services_most_dangerous),
+                  "Motorcycles" = table(data$motorcycles_most_dangerous))
+
+    # Weighted average
+    apply(temp, 2, function(x) (x[1] + 3*x[2] + 5*x[3]) / sum(x) )
+
+    # Dangerous transport modes
+    temp <- temp[3:1, c(2,1,3)]
+
+    pdf( paste0(directory, "/plots/dangerous_modes.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), las=1, col=c("grey50", "grey70", "grey90"), main="")
+      text(x=c(.275, .56, .85), y=c(.85, .82, .8), labels=c("16", "22", "22"))
+      text(x=c(.275, .56, .85), y=c(.54, .485, .34), labels=c("16", "15", "29"))
+      text(x=c(.275, .56, .85), y=c(.175, .15, .02), labels=c("23", "24", "7"))
+    dev.off()
+    
+
+
+  ##  2.3: Road Conditions
+
+    temp <- matrix(c(22, 19, 10, 5, 4,
+                     22, 17, 14, 6, 0,
+                     16, 11, 22, 5, 4),
+                   nrow=5, ncol=3)
+      rownames(temp) <- c("Very Important", "Important", "Moderately Important", "Unimportant", "Very Unimportant")
+      colnames(temp) <- c("Condition of Travelway", "Lack of Adequate Signage", "Dust from Unpaved Roads")
+    temp <- temp[, c(3,1,2)]
+
+    pdf( paste0(directory, "/plots/road_conditions_rural_crashes.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), main="", las=1, 
+                 col=paste0("grey", 5:10*10)) 
+      text(x=c(.305, .58, .86), y=c(.85, .81, .81), labels=c("16", "22", "22"))
+      text(x=c(.305, .58, .865), y=c(.62, .475, .475), labels=c("11", "19", "17"))
+      text(x=c(.305, .58, .865), y=c(.335, .225, .215), labels=c("22", "10", "14"))
+      text(x=c(.305, .58, .865), y=c(.09, .09, .03), labels=c("5", "5", "6"))
+      text(x=c(.305, .58), y=.00, labels=c("4", "4"))
+    dev.off()
+    
+  # Weighted average
+  apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
+  
+
+
+
+  ##  2.4: Driving Behaviour
+    
+    temp <- cbind( "Distracted Driving" = table(data$need_research_distracted_driving),
+                   "Non-Use of\nSafety Equipment" = table(data$need_research_nonuse_safety_equipment),
+                   "Driving Under\nthe Influence" = table(data$need_research_DUI),
+                   "Aggressive Driving" = table(data$need_research_aggressive_driving),
+                   "Poor Driving" = table(data$need_research_poor_driving) )
+      rownames(temp) <- c("Very Unimportant", "Unimportant", "Moderately Important", "Important", "Very Important")
+
+    temp <- temp[ 5:1, ]
+    
+    pdf( paste0(directory, "/plots/driver_behaviors_that_need_research.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), main="", las=1, col=paste0("grey", 5:10*10)) 
+      text(x=c(.255, .42, .585, .75, .915), y=c(.875, .84, .775, .75, .72), labels=temp[1,])
+      text(x=c(.255, .42, .585, .75, .915), y=c(.63, .475, .4, .35, .31), labels=temp[2,])
+      text(x=c(.255, .42, .585, .75, .915), y=c(.315, .2, .18, .12, .1), labels=temp[3,])
+      text(x=c(.255, .42), y=c(.07, .045), labels=temp[4,1:2])
+      text(x=c(.585), y=-.01, labels=temp[5,3])
+    dev.off()
+        
+    # Weighted average
+    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
+
+
+
+
+  ##  2.5: Impacts on Women and Children
+
+    temp <- cbind( table(data$crashes_disproportionately_impact_women),
+                   table(data$crashes_disproportionately_impact_kids) )
+      colnames(temp) <- c("Women", "Children")
+    temp <- t( temp[5:1,] )
+    
+    pdf( paste0(directory, "/plots/women_kids_crashes.pdf") )
+      par(mar=c(0,0,0,0))
+      mosaicplot(temp, las=1, col=paste0("grey", 5:10*10), main="")
+      text(x=c(.405,.8), y=c(.91,.865), labels=temp[,1])
+      text(x=c(.405,.8), y=c(.68,.53), labels=temp[,2])
+      text(x=c(.405,.8), y=c(.4,.22), labels=temp[,3])
+      text(x=c(.405), y=c(.15), labels=temp[1,4])
+      text(x=c(.405,.8), y=c(0,0), labels=temp[,5])
+    dev.off()
+    
+    # Weighted average
+    apply(temp, 1, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
+
+
+
+
+  ##  2.6: Rural Accessibility Research Needs
+
+    temp <- table(data$most_pressing_accessibility_issue)
+      names(temp) <- c("Commercial\nActivities", "Educational\nOpportunities", "Healthcare")
+    temp <- temp[c(3,1,2)]
+
+    pdf( paste0(directory, "/plots/accessibility_issues.pdf") )
+      par(mar=c(6,4,1,1))
+      barplot(temp, las=2, ylab="# of respondents", ylim=c(0,40))
+    dev.off()
+
+
+
+
+  ##  2.7: Healthcare Accessibility Research Needs
+
+    temp <- cbind( "General/\nPreventative" = table(data$health_access_general_preventative),
+                   "Disease/\nChronic Condition" = table(data$health_access_disease_chronic_condition),
+                   "Pediatric" = table(data$health_access_pediatric),
+                   "Emergency/Trauma" = table(data$health_access_emergency_trauma),
+                   "Maternal/\nPre-Natal Care" = table(data$health_access_maternal_prenatal))
+    temp <- temp[5:1, ]
+      rownames(temp) <- c("Highest Need", NA,NA,NA, "Lowest Need")
+    
+    pdf( paste0(directory, "/plots/healthcare_accessibility.pdf") )
+      par(mar=c(1,1,1,0))
+      mosaicplot(t(temp), las=1, col=paste0("grey", 5:10*10), main="")
+      text(x=c(.195,.725,.91), y=c(.955,.85,.625), labels=c(2,11,23))
+      text(x=c(.195,.37,.54,.725,.91), y=c(.84,.835,.75,.55,.185), labels=temp[2,])
+      text(x=c(.195,.37,.54,.725,.91), y=c(.61,.625,.42,.28,.07), labels=temp[3,])
+      text(x=c(.37,.54,.725), y=c(.325,.15,.09), labels=c("15","8","4"))
+      text(x=c(.195,.37,.725), y=c(.19,.02,-.01), labels=c(14,4,2))
+    dev.off()
+    
+    # Weighted average
+    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
+  
+
+
+
+  ##  2.8: Education Accessibility Research Needs
+
+    temp <- matrix(c(3,2,0,1,0, 2,3,1,0,0, 1,4,1,0,0), nrow=5)
+      rownames(temp) <- c("Very Important",
+                          "Important",
+                          "Moderately Important",
+                          "Unimportant",
+                          "Very Unimportant")
+      colnames(temp) <- c("Provision of\nTransport Services",
+                          "Road/Travel Safety\nEducation & Awareness for\nChildren and Parents", 
+                          "Provision of\nPedestrian Facilities")
+    
+    pdf( paste0(directory, "/plots/education_accessibility.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), las=1, col=paste0("grey", 5:10*10), main="")
+      text(x=c(.31,.585,.86), y=c(.75,.85,.9), labels=temp[1,])
+      text(x=c(.31,.585,.86), y=c(.34,.4,.49), labels=temp[2,])
+      text(x=c(.31,.585,.86), y=c(.06,.085,.085), labels=c(temp[4,1],temp[3,2:3]))
+    dev.off()
+    
+    # Weighted average
+    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4]) / sum(x) )
+
+
+
+
+  ##  2.9: Economic Accessibility Research Needs
+
+    temp <- matrix(c(6,8,1,0, 5,7,3,0, 1,5,8,1), nrow=4)
+      rownames(temp) <- c("Strong relationship",
+                          "Direct relationship",
+                          "Indirect relationship",
+                          "No relationship")
+      colnames(temp) <- c("Connectivity to\nService-Sector Employment\nin Nearby Populated Areas", 
+                          "Transport of\nAgricultural Goods to Market", 
+                          "Natural Resource Extraction")
+
+    pdf( paste0(directory, "/plots/economic_access.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), las=1, col=paste0("grey", 5:9*10), main="")
+      text(x=c(.3,.575,.85), y=c(.79,.825,.95), labels=temp[1,])
+      text(x=c(.3,.575,.85), y=c(.325,.425,.75), labels=temp[2,])
+      text(x=c(.3,.575,.85), y=c(.015,.075,.305), labels=c(temp[3,]))
+      text(.85, 0, "1")
+    dev.off()
+    
+    # Weighted average
+    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4]) / sum(x) )
+
+
+
+  ##  2.10: Rural Road Dust Research Needs
+    
+    pdf( paste0(directory, "/plots/road_dust.pdf") )
+      par(mar=c(2.5,4,1,1))      
+      barplot(table(data$inadequate_attention_dust), ylab="# of respondents", ylim=c(0,40))
+    dev.off()
+
+    table(data$inadequate_attention_dust) / sum(table(data$inadequate_attention_dust))
+
+
+
+  ##  2.11: Rural Air Pollution Exposure
+
+    temp <- cbind( table(data$air_pollution_roadside_residents_businesses),
+                   table(data$air_pollution_individuals_in_roadway_environment),
+                   table(data$air_pollution_vehicle_passengers) )
+      colnames(temp) <- c("Occupants of Roadside\nResidences and Businesses",
+                          "Individuals in\nRoadway Environment",
+                          "Vehicle Passengers")
+    temp <- temp[3:1, ]
+    
+    pdf( paste0(directory, "/plots/air_pollution.pdf") )
+      par(mar=c(1,1,1,1))
+      mosaicplot(t(temp), las=1, col=c("grey50", "grey70", "grey90"), main="")
+      text(x=c(.285,.57,.85), y=c(.72,.78,.92), labels=temp[1,])
+      text(x=c(.285,.57,.85), y=c(.26,.29,.73), labels=temp[2,])
+      text(x=c(.285,.57,.85), y=c(.01,.0,.3), labels=temp[3,])
+    dev.off()
+    
+    # Weighted average
+    apply(temp, 2, function(x) (5*x[1] + 3*x[2] + x[3]) / sum(x) )
+
+
+
+
+
+
+
+# SECTION 3 ---------------------------------------------------------------
+
+
+
+
+
 
   # Bivariate relationships
   CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
@@ -173,268 +448,6 @@ options(digits=2)
 
 ## DESCRIPTIVE STATISTICS
 
-  ## Data in different format (e.g. most, neutral, least are separate variables)
-  data <- read.csv("/home/ubuntu/modified_data.csv") 
-
-  # Drop 'interested in answering one last question'
-  data <- data[, -grep("Interested", names(data))]
-  data <- data[, -grep("length", names(data))]
-  
-  # Drop PCS questions for this paper
-  data <- data[, -grep("PCS", names(data))]
-
-
-  # Affiliation (%)
-  temp <- 100 * round( sort(table(data$affiliation), decreasing = TRUE) / sum(!is.na(data$affiliation)), 2)
-    names(temp)[ grep("Public safety", names(temp)) ] <- "Public safety/\nlaw enforcement"
-    names(temp)[ grep("Other", names(temp)) ] <- "Other"
-  pdf("affiliation.pdf")
-    par(mar=c(10,4,1,0))
-    barplot(height=temp, ylab="% of respondents", las=2)
-  dev.off()
-
-  # Professional speciality
-  temp <- 100 * round( sort(table(data$specialty), decreasing = TRUE) / sum(!is.na(data$specialty)), 2)
-    names(temp)[ grep("Environmental", names(temp)) ] <- "Environmental\nprotection"
-    names(temp)[ grep("Other", names(temp)) ] <- "Other"
-  pdf("specialty.pdf")
-    par(mar=c(7,3,1,0))
-    barplot(temp, ylab="% of respondents", las=2)
-  dev.off()
-
-
-  # Access from country (%)
-  length( unique(data$access.from.country) )
-  100 * round( sort(x = table(data$access.from.country), decreasing = TRUE) / length(data$access.from.country), 2)
-
-
-  # Access from continent (%)
-  length( unique(data$access.from.continent) )
-  100 * round( sort(x = table(data$access.from.continent), decreasing = TRUE) / length(data$access.from.continent), 2)
-
-  levels(data$most.dangerous.mode) <- c("Motorcycles", "Transport Services", "Vulnerable Users")
-  levels(data$dangerous.mode) <- c("Motorcycles", "Transport Services", "Vulnerable Users")
-  levels(data$least.dangerous.mode) <- c("Motorcycles", "Transport Services", "Vulnerable Users")
-
-  # Dangerous transport modes
-  temp <- cbind( "Most Dangerous" = table(data$most.dangerous.mode),
-              "Dangerous" = table(data$dangerous.mode),
-              "Least Dangerous" = table(data$least.dangerous.mode) )
-  temp <- temp[c(2,3,1),]
-
-  pdf("dangerous_modes.pdf")
-    par(mar=c(1,1,1,1))
-    mosaicplot(temp, las=1, col=c("grey50", "grey70", "grey90"), main="")
-    text(x=c(.28, .57, .85), y=c(.85, .8, .775), labels=c("16", "22", "22"))
-    text(x=c(.28, .57, .85), y=c(.55, .5, .35), labels=c("16", "15", "29"))
-    text(x=c(.28, .57, .85), y=c(.20, .175, .03), labels=c("23", "24", "7"))
-  dev.off()
-
-  # Weighted average
-  apply(temp, 1, function(x) (5*x[1] + 3*x[2] + x[3]) / sum(x) )
-
-
-
-
-  # Road conditions and rural road crashes
-  temp <- matrix(c(22, 19, 10, 5, 4,
-                22, 17, 14, 6, 0,
-                16, 11, 22, 5, 4),
-              nrow=5, ncol=3)
-    rownames(temp) <- c("Very Important", "Important", "Moderately Important", "Unimportant", "Very Unimportant")
-    colnames(temp) <- c("Condition of Travelway", "Lack of Adequate Signage", "Dust from Unpaved Roads")
-    temp <- temp[,c(3,1,2)]
-    pdf("road_conditions_rural_crashes.pdf")
-      par(mar=c(1,1,1,1))
-      mosaicplot(t(temp), main="", las=1, 
-                 col=paste0("grey", 5:10*10)) 
-      text(x=c(.335, .6, .865), y=c(.85, .8, .8), labels=c("16", "22", "22"))
-      text(x=c(.335, .6, .865), y=c(.625, .475, .475), labels=c("11", "17", "19"))
-      text(x=c(.335, .6, .865), y=c(.35, .225, .215), labels=c("22", "14", "10"))
-      text(x=c(.335, .6, .865), y=c(.09, .09, .04), labels=c("5", "6", "5"))
-      text(x=c(.335, .6), y=.00, labels=c("4", "4"))
-    dev.off()
-
-
-    # Weighted average
-    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
-
-
-    
-    # Driver behaviors that need research
-    temp <- cbind( aggressive.driving = table(data$need.research.aggressive.driving),
-                distracted.driving = table(data$need.research.distracted.driving),
-                DUI = table(data$need.research.DUI),
-                nonuse.safety.equipment = table(data$need.research.nonuse.safety.equipment),
-                educate.regulate = table(data$need.research.education.regulation) )
-      rownames(temp) <- c("Important", "Moderately Important", "Unimportant", "Very Important", "Very Unimportant")
-      colnames(temp) <- c("Aggressive Driving", 
-                       "Distracted Driving",
-                       "Driving Under\nthe Influence",
-                       "Non-Use of\nSafety Equipment",
-                       "Poor Driving")
-
-    temp <- temp[ c(4,1,2,3,5), c(2,4,3,1,5) ]
-
-    pdf("driver_behaviors_that_need_research.pdf")
-      par(mar=c(1,1,1,1))
-      mosaicplot(t(temp), main="", las=1, col=paste0("grey", 5:10*10)) 
-      text(x=c(.26, .42, .585, .75, .915), y=c(.875, .84, .775, .75, .72), labels=temp[1,])
-      text(x=c(.26, .42, .585, .75, .915), y=c(.65, .475, .4, .35, .32), labels=temp[2,])
-      text(x=c(.26, .42, .585, .75, .915), y=c(.32, .2, .18, .12, .1), labels=temp[3,])
-      text(x=c(.26, .42), y=c(.07, .05), labels=temp[4,1:2])
-      text(x=c(.585), y=-.01, labels=temp[5,3])
-    dev.off()
-
-    
-    # Weighted average
-    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
-
-
-
-    # Women, kids, and crashes
-    temp <- cbind( table(data$crashes.disproportionately.impact.women),
-                   table(data$crashes.disproportionately.impact.kids) )
-      colnames(temp) <- c("Women", "Children")
-    temp <- t( temp[c(4,1,3,2,5),] )
-
-    pdf("women_kids_crashes.pdf")
-      par(mar=c(0,0,0,0))
-      mosaicplot(temp, las=1, col=paste0("grey", 5:10*10), main="")
-      text(x=c(.41,.8), y=c(.9,.85), labels=temp[,1])
-      text(x=c(.41,.8), y=c(.68,.525), labels=temp[,2])
-      text(x=c(.41,.8), y=c(.4,.225), labels=temp[,3])
-      text(x=c(.41), y=c(.165), labels=temp[1,4])
-      text(x=c(.41,.8), y=c(0,0), labels=temp[,5])
-    dev.off()
-
-    # Weighted average
-    apply(temp, 1, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
-
-
-
-    # Most pressing accessibility issue
-    temp <- table(data$most.pressing.accessibility)
-      names(temp) <- c("Commercial\nactivities", "Educational\nopportunities", "Healthcare")
-      temp <- temp[c(3,1,2)]
-    pdf("accessibility_issues.pdf")
-      par(mar=c(6,4,1,1))
-      barplot(temp, las=2, ylab="# of respondents", ylim=c(0,40))
-    dev.off()
-
-
-
-    # Healthcare accessibility
-    temp <- cbind( table(data$Most.important.health.access),
-                   table(data$Important.health.access),
-                   table(data$Neutral.health.access),
-                   c(table(data$Unimportant.health.access)[1:2],
-                     "Maternal care" = 0,
-                     table(data$Unimportant.health.access)[3:4]),
-                   table(data$Least.important.health.access) )
-    temp <- temp[ c(2,1,4,5,3), ]
-    rownames(temp) <- c("General/\nPreventative", "Disease/\nChronic Condition", 
-                        "Pediatric", "Emergency/Trauma", "Maternal/\nPre-Natal")
-    colnames(temp) <- c("Most Important", NA,NA,NA, "Least Important")
-    
-    pdf("healthcare_accessibility.pdf")
-      par(mar=c(1,1,1,0))
-      mosaicplot(temp, las=1, col=paste0("grey", 5:10*10), main="")
-      text(x=c(.215,.73,.91), y=c(.95,.85,.625), labels=c(2,11,23))
-      text(x=c(.215,.38,.55,.73,.91), y=c(.85,.84,.75,.55,.185), labels=temp[,2])
-      text(x=c(.215,.38,.55,.73,.91), y=c(.595,.625,.42,.28,.07), labels=temp[,3])
-      text(x=c(.38,.55,.73), y=c(.325,.15,.09), labels=c("15","8","4"))
-      text(x=c(.215,.38,.73), y=c(.2,.02,-.01), labels=c(14,4,2))
-    dev.off()
-
-    # Weighted average
-    apply(temp, 1, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4] + x[5]) / sum(x) )
-
-
-
-
-    # Education accessibility
-    temp <- matrix(c(2,3,1,0,0, 1,4,1,0,0, 3,2,0,1,0), nrow=5)
-      rownames(temp) <- c("Very Important",
-                          "Important",
-                          "Moderately Important",
-                          "Unimportant",
-                          "Very Unimportant")
-      colnames(temp) <- c("Road/Travel Safety\nEducation & Awareness for\nChildren and Parents", 
-                          "Provision of\nPedestrian Facilities", 
-                          "Provision of\nTransport Services")
-    temp <- temp[, c(3,1,2) ]
-
-    pdf("education_accessibility.pdf")
-      par(mar=c(1,1,1,1))
-      mosaicplot(t(temp), las=1, col=paste0("grey", 5:10*10), main="")
-      text(x=c(.31,.585,.86), y=c(.75,.85,.9), labels=temp[1,])
-      text(x=c(.31,.585,.86), y=c(.34,.415,.49), labels=temp[2,])
-      text(x=c(.31,.585,.86), y=c(.06,.09,.09), labels=c(temp[4,1],temp[3,2:3]))
-    dev.off()
-    
-    # Weighted average
-    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4]) / sum(x) )
-
-
-
-
-
-    # Access
-    temp <- matrix(c(5,7,3,0, 6,8,1,0, 1,5,8,1), nrow=4)
-    rownames(temp) <- c("Strong relationship",
-                        "Direct relationship",
-                        "Indirect relationship",
-                        "No relationship")
-    colnames(temp) <- c("Transport of\nAgricultural Goods to Market", 
-                        "Connectivity to\nService-Sector Employment\nin Nearby Populated Areas", 
-                        "Natural Resource Extraction")
-    temp <- temp[, c(2,1,3) ]
-
-    pdf("access.pdf")
-      par(mar=c(1,1,1,1))
-      mosaicplot(t(temp), las=1, col=paste0("grey", 5:9*10), main="")
-      text(x=c(.3,.575,.85), y=c(.79,.825,.95), labels=temp[1,])
-      text(x=c(.3,.575,.85), y=c(.325,.425,.75), labels=temp[2,])
-      text(x=c(.3,.575,.85), y=c(.015,.075,.305), labels=c(temp[3,]))
-      text(.85, 0, "1")
-    dev.off()
-
-    # Weighted average
-    apply(temp, 2, function(x) (5*x[1] + 4*x[2] + 3*x[3] + 2*x[4]) / sum(x) )
-
-
-
-    # Road dust
-    pdf("road_dust.pdf")
-      par(mar=c(2.5,4,1,1))      
-      barplot(table(data$inadequate.attention.dust), 
-              ylab="frequency")
-    dev.off()
-    table(data$inadequate.attention.dust) / sum(table(data$inadequate.attention.dust))
-
-
-
-    # Air pollution
-    temp <- cbind( table(data$air.pollution.most.vulnerable),
-                   table(data$air.pollution.vulnerable),
-                   table(data$air.pollution.least.vulnerable) )
-    rownames(temp) <- c("Occupants of Roadside\nResidences and Businesses",
-                        "Individuals in\nRoadway Environment",
-                        "Vehicle Passengers")
-      colnames(temp) <- c("Most Vulnerable", "Vulnerable", "Least Vulnerable")
-    temp <- temp[ c(1,3,2), ]
-
-    pdf("air_pollution.pdf")
-      par(mar=c(1,1,1,1))
-      mosaicplot(temp, las=1, col=c("grey50", "grey70", "grey90"), main="")
-      text(x=c(.285,.57,.85), y=c(.72,.78,.92), labels=temp[,1])
-      text(x=c(.285,.57,.85), y=c(.26,.29,.73), labels=temp[,2])
-      text(x=c(.285,.57,.85), y=c(.01,.0,.3), labels=temp[,3])
-    dev.off()
-
-    # Weighted average
-    apply(temp, 1, function(x) (5*x[1] + 3*x[2] + x[3]) / sum(x) )
 
 
 

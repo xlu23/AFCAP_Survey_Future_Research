@@ -362,4 +362,4 @@
 # SAVE DATA FOR ANALYSIS --------------------------------------------------
 
   ## Use RData format to preserve ordered variables (CSV does not retain that information)
-  save(data, '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
+  save(data, file = '/Users/User/Dropbox/transport and conflict/Stones survey paper/Data/analysis.RData', ascii = TRUE)
