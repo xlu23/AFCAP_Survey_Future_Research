@@ -344,7 +344,7 @@
 
 
   ##  Replace NAs with 'missing' so they don't get dropped from the analysis
-  #cluster_data[ is.na(cluster_data) ] <- 'missing'
+  cluster_data[ is.na(cluster_data) ] <- 'missing'
 
 
   ##  Change variable names for nice plots
@@ -385,69 +385,23 @@
 
   ##  HIERARCHICAL CLUSTERING
 
-# don't include country where the survey was taken
-# the algorithm crashes when we include it
-hclust <- hclustvar(X.quali = cluster_data) #discrete_data[, -grep("country", names(discrete_data))])
-
-table(cluster_data$"Access from Continent",
-      cluster_data$"Need Research (Education): Provision of Pedestrian Facilities")
+    # Don't include country where the survey was taken
+    # The algorithm crashes when we include it
+    hclust <- hclustvar(X.quali = cluster_data) #discrete_data[, -grep("country", names(discrete_data))])
 
 
-
-
-pdf( paste0(directory, 'plots/cluster.pdf'), height=20, width=20 )
-  par(mar = c(0,4,0,0))
-  plot(hclust, main ="")
-dev.off()
-
-
-stability(hclust, B=25)
-cutree(hclust, k=3)
-
-cutreevar(hclust, k=3)
-pdf("dendrogram.pdf")
-par(mar=c(1,8,0,1))
-plot(hclust, main="", ylab="") 
-mtext("                                                                           height", side=2, line=2.4)
-mtext('Cluster Analysis Dendrogram', side=2, font=2, cex=1.5, line=5)
-dev.off()
-
-
-rules <- apriori(data, parameter = list(supp = 0.025, conf = 1))
-options(digits=2)
+    # Plot    
+    pdf( paste0(directory, 'plots/cluster.pdf'), height=20, width=20 )
+      par(mar = c(0,4,0,0))
+      plot(hclust, main ="")
+    dev.off()
 
 
 
+  ##  ASSOCIATION RULES
 
-
-
-# ANALYSIS ----------------------------------------------------------------
-
-  
-  
-
-
-  # Hierarchical clustering
-  # don't include country where the survey was taken
-  # the algorithm crashes when we include it
-  hclust <- hclustvar(X.quali = data[, -grep("country", names(data))])
-  stability(hclust, B=25)
-  cutree(hclust, k=3)
-
-  cutreevar(hclust, k=3)
-  pdf("dendrogram.pdf")
-    par(mar=c(1,8,0,1))
-    plot(hclust, main="", ylab="") 
-    mtext("                                                                           height", side=2, line=2.4)
-    mtext('Cluster Analysis Dendrogram', side=2, font=2, cex=1.5, line=5)
-  dev.off()
-
-
-rules <- apriori(data, parameter = list(supp = 0.025, conf = 1))
-options(digits=2)
-
-
-
+  rules <- apriori(data, parameter = list(supp = 0.025, conf = 1))
+  options(digits=2)
 
   # Market basket analysis 
   rules <- sort(rules, by='lift', decreasing=TRUE)
@@ -455,9 +409,6 @@ options(digits=2)
 
 
 
-
-
-## DESCRIPTIVE STATISTICS
 
 
 
@@ -472,28 +423,4 @@ table(data$specialty, data$need_research_DUI)
 table(data$need_research_aggressive_driving, data$inadequate_attention_dust)
 table(data$need_research_DUI, data$specialty)
 
-
-
-
-#     # PCS
-#     temp <- cbind( table(data$PCS.building.roads),
-#                    table(data$PCS.transport.provision) )
-#       colnames(temp) <- c("Build roads", "Transport provision")
-#     temp <- temp[ c(5,1,2,4,3), ]
-# 
-#     par(mar=c(1,1,1,1))
-#     mosaicplot(t(temp), las=1, col=paste0("grey", 5:10*10), main="")
-#     text(x=c(.39,.8), y=c(.78,.74), labels=temp[1,])
-#     text(x=c(.39,.8), y=c(.42, .33), labels=temp[2,])
-#     text(x=c(.39,.8), y=c(.16,.1), labels=temp[3,])
-# 
-#     # Weighted average
-#     apply(temp, 1, function(x) (5*x[1] + 3*x[2] + x[3]) / sum(x) )
-
-
-
-# # PCS
-# table(data$PCS.building.roads, data$PCS.transport.provision)
-# pcs.rules <- apriori(subset(data, select=grep('PCS', names(data))), parameter = list(supp = 0.05, conf = 0.8))
-# inspect( sort(pcs.rules, by='lift', decreasing=T) )
 
