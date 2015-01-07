@@ -28,13 +28,15 @@
 
 # LOAD LIBRARIES ----------------------------------------------------------
 
+  library(reshape)
   library(ClustOfVar)
+  library(rpart)
   library(arules)
   library(arulesViz)
   library(lattice)
   library(dendextend)
   library(gmodels)
-  library(qpcR)
+  library(cvTools)
 
 
 
@@ -344,7 +346,7 @@
 
 
   ##  Replace NAs with 'missing' so they don't get dropped from the analysis
-  cluster_data[ is.na(cluster_data) ] <- 'missing'
+  #cluster_data[ is.na(cluster_data) ] <- 'missing'
 
 
   ##  Change variable names for nice plots
@@ -361,8 +363,8 @@
                                          "air_pollution_roadside_residents_businesses" = "Air Pollution: Roadside Residents & Businesses at Risk",
                                          "air_pollution_vehicle_passengers" = "Air Pollution: Vehicle Passengers at Risk",
                                          "need_research_condition_of_travelway" = "Need Research (Road): Condition of Travelway & Rural Crashes",
-                                         "need_research_lack_of_adequate_signage" = "Need Research (Road): Dust from Unpaved Roads & Rural Crashes",
-                                         "need_research_dust_from_unpaved_roads" = "Need Research (Road): Aggressive Driving & Rural Crashes",
+                                         "need_research_lack_of_adequate_signage" = "Need Research (Road): Lack of Adequate Signage",
+                                         "need_research_dust_from_unpaved_roads" = "Need Research (Road): Dust from Unpaved Roads & Rural Crashes",
                                          "need_research_aggressive_driving" = "Need Research (Driver): Aggressive Driving & Rural Crashes",
                                          "need_research_DUI" = "Need Research (Driver): DUIs & Rural Crashes",
                                          "need_research_distracted_driving" = "Need Research (Driver): Distracted Driving & Rural Crashes",
@@ -382,40 +384,59 @@
                                          "health_access_disease_chronic_condition" = "Need Research (Healthcare): Disease/Chronic Condition",
                                          "health_access_emergency_trauma" = "Need Research (Healthcare): Emergency/Trauma"))
 
+    # Some variables do not seem analytically useful, so I drop them:
+    #   - Access from country: several countries have only one respondent.  I drop them
+    #     to prevent the algorithm from trying to infer something about countries from
+    #     small sample sizes.
+    #   - Most pressing accessibility issue: this determines which set of questions the
+    #     respondent answers: healthcare, education, or commercial activities.  We can 
+    #     infer which of these three the respondent thinks is most pressing from which
+    #     set of questions she answered.
+    cluster_data <- cluster_data[, -c( grep("Country", names(cluster_data)),
+                                       grep("Most Pressing", names(cluster_data)) ) ]
+
+    # I also drop the education variables.  So few respondents answered those questions
+    # that we cannot bootstrap when they are included.  This is just as well because we 
+    # probably can't tie these variables to others given how few observations there are.
+    cluster_data <- cluster_data[, -grep("Education", names(cluster_data)) ]
+
+
 
   ##  HIERARCHICAL CLUSTERING
 
-    # Don't include country where the survey was taken
-    # The algorithm crashes when we include it
-    hclust <- hclustvar(X.quali = cluster_data) #discrete_data[, -grep("country", names(discrete_data))])
+  hclust <- hclustvar(X.quali = cluster_data)
 
+  # Plot
+  pdf( paste0(directory, '/plots/cluster.pdf'), height=25, width=20 )
+    par(mar = c(0,4,0,0), cex=2)
+    plot(hclust, main ="")
+  dev.off()
 
-    # Plot    
-    pdf( paste0(directory, 'plots/cluster.pdf'), height=20, width=20 )
-      par(mar = c(0,4,0,0))
-      plot(hclust, main ="")
+  # Check aggregation levels
+  pdf( paste0(directory, '/plots/aggregation_levels.pdf') )
+    par(mar=c(4,4,1,1))
+    plot.hclustvar(hclust, type='index', main = '')
+  dev.off()
+
+  # Check stability 
+  hclust_stability <- stability(hclust, 100)
+    pdf( paste0(directory, '/plots/boxplot_stability.pdf') )
+      par(mar=c(3,3,1,1))
+      boxplot(hclust_stability$matCR, main='')
     dev.off()
 
-
-
-  ##  ASSOCIATION RULES
-
-  rules <- apriori(data, parameter = list(supp = 0.025, conf = 1))
-  options(digits=2)
-
-  # Market basket analysis 
-  rules <- sort(rules, by='lift', decreasing=TRUE)
-  inspect(rules[1:30])
+    pdf( paste0(directory, '/plots/mean_stability.pdf') )
+      plot(hclust_stability, main='')
+    dev.off()
+  
+  # Pruned list
+  pruned_hclust <- cutreevar(hclust, 5)
+    sort(pruned_hclust$cluster)
 
 
 
 
-
-
-
-
-
-# Bivariate relationships
+  # Bivariate relationships
 CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
 table(data$access_goods2market)
 
