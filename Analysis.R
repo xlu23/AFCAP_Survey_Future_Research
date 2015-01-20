@@ -20,7 +20,7 @@
 
 # WORKING DIRECTORY -------------------------------------------------------
 
-  directory <- '/Users/User/Dropbox/transport and conflict/Stones survey paper/'
+  directory <- '/Users/jtwalsh/Dropbox/transport and conflict/Stones survey paper/'
 
 
 
@@ -31,8 +31,6 @@
   library(reshape)
   library(ClustOfVar)
   library(rpart)
-  library(arules)
-  library(arulesViz)
   library(lattice)
   library(dendextend)
   library(gmodels)
