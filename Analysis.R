@@ -20,7 +20,7 @@
 
 # WORKING DIRECTORY -------------------------------------------------------
 
-  directory <- '/Users/jtwalsh/Dropbox/transport and conflict/Stones survey paper/'
+  directory <- '/Users/jtwalsh/Dropbox/transport_and_conflict/expert_survey_paper/'
 
 
 
@@ -29,10 +29,9 @@
 # LOAD LIBRARIES ----------------------------------------------------------
 
   library(reshape)
-  library(ClustOfVar)
+  library(cluster)
   library(rpart)
   library(lattice)
-  library(dendextend)
   library(gmodels)
   library(cvTools)
 
@@ -335,10 +334,10 @@
 
 # SECTION 3 ---------------------------------------------------------------
 
-  ##  This section presents hierarchical clustering and assocation rules.
+  ##  This section presents hierarchical clustering.
   ##  Before we begin these analyses, we need to manipulate the dataset.  
   ##  StartDate and survey_length_of_time have no analytical utility, so 
-  ##  I begin by dropping them:
+  ##  I start by dropping them:
 
   cluster_data <- subset(data, select = which( !(names(data) %in% c("StartDate", "survey_length_of_time")) ))
 
@@ -402,13 +401,17 @@
 
   ##  HIERARCHICAL CLUSTERING
 
+  zzz
+
   hclust <- hclustvar(X.quali = cluster_data)
 
   # Plot
   pdf( paste0(directory, '/plots/cluster.pdf'), height=25, width=20 )
     par(mar = c(0,4,0,0), cex=2)
-    plot(hclust, main ="")
+    plot(hclust, main ="", ylab="Length")
+    rect.hclust(hclust, 5)
   dev.off()
+  system(paste0('pdfjam --angle -90 --landscape --suffix "rotated" -- ', directory, 'plots/cluster.pdf'))
 
   # Check aggregation levels
   pdf( paste0(directory, '/plots/aggregation_levels.pdf') )
@@ -432,14 +435,100 @@
     sort(pruned_hclust$cluster)
 
 
+  # Plot with clusters identified
+  rect.hclust(hclust, k = 5)
 
 
-  # Bivariate relationships
-CrossTable(data$research_school_pedestrian, data$access_from_continent, chisq=T)
-table(data$access_goods2market)
 
-table(data$specialty, data$need_research_DUI)
-table(data$need_research_aggressive_driving, data$inadequate_attention_dust)
-table(data$need_research_DUI, data$specialty)
+  ################
+  ##  We'd like to know the strength of the correlation at each branch.  This next section calculates the values we're interested in.
+
+    
+    data$inadequate_attention_dust <- ordered(data$inadequate_attention_dust, c("Agree", "No opinion", "Disagree"))
+    temp.data <- data[, -c(3:6,10)]
+    temp.data[ is.na(temp.data) ] <- 0
+    t2 <- daisy(data.frame(t(temp.data)))
+    t2[ is.na(t2) ] <- 0
+    temp <- agnes(t2, stand=TRUE)
+pdf('/Users/jtwalsh/Desktop/hclust.pdf', height = 11, width = 8.5)
+  par(mar=c(3,4,1,1))
+  plot(temp, main="")
+dev.off()
+summary(temp)
+
+table(data$crashes_disproportionately_impact_women, data$crashes_disproportionately_impact_kids)
+
+for(i in 1:ncol(data)){
+  print(cbind(i, names(data)[i], class(data[,i])))
+}
+
+View(temp.data)
+
+
+    # Make it as easy as possible: write a function that takes variables for two clusters
+    # as input and gives the bi-cluster similarity score as output
+    similarity.score <- function (cluster1.vars, cluster2.vars) {
+      
+#       cluster1.vars = c('Access from Continent',
+#                         'Need Research (Road): Lack of Adequate Signage',
+#                         'Need Research (Road): Dust from Unpaved Roads & Rural Crashes')
+#       cluster2.vars = c('Professional Affiliation',
+#                         'Professional Specialty')
+
+#       cluster1.vars = c('Need Research (Driver): Distracted Driving & Rural Crashes',
+#                         'Need Research (Driver): Non-Use of Safety Equipment & Rural Crashes',
+#                         'Need Research (Driver): DUIs & Rural Crashes')
+#       cluster2.vars = c('Need Research (Driver): Aggressive Driving & Rural Crashes',
+#                         'Need Research (Driver): Poor Driving & Rural Crashes')
+
+      cluster1.vars = c('Rural Road Crashes Disproportionately Impact Children')
+      cluster2.vars = c('Rural Road Crashes Disproportionately Impact Women')
+      
+      cluster1.data   <- subset(cluster_data, select = cluster1.vars)
+      cluster2.data   <- subset(cluster_data, select = cluster2.vars)
+      
+#       recode.cluster  <- recod(X.quanti = NULL, X.quali = cbind(cluster1.data, cluster2.data))
+#       cluster.b       <- PCAmix(recode.cluster$Z, graph = FALSE)$coef$dim1
+#       cluster.scores  <- cbind(1, recode.cluster$Z) %*% cluster.b
+      
+      recode.cluster1 <- recod(X.quanti = NULL, X.quali = cluster1.data)
+      cluster1.b      <- PCAmix(recode.cluster1$Z, graph = FALSE)$coef$dim1
+      cluster1.scores <- cbind(1, recode.cluster1$Z) %*% cluster1.b
+      
+      recode.cluster2 <- recod(X.quanti = NULL, X.quali = cluster2.data)
+      cluster2.b      <- PCAmix(recode.cluster2$Z, graph = FALSE)$coef$dim1
+      cluster2.scores <- cbind(1, recode.cluster2$Z) %*% cluster2.b
+    
+      cluster1.b
+
+      cor(cluster1.scores, cluster2.scores)^2
+      mixedVarSim(cluster1.scores, cluster2.scores)
+      mixedVarSim(cluster1.data, cluster2.data)
+
+    }
+
+
+    # CLUSTER 1
+
+      #  disproportionately impact
+      similarity.score(cluster1.vars = 'Rural Road Crashes Disproportionately Impact Women',
+                       cluster2.vars = 'Rural Road Crashes Disproportionately Impact Children')
+
+      # bad driving
+similarity.score(c('Need Research (Driver): Aggressive Driving & Rural Crashes', 
+                   'Need Research (Driver): Poor Driving & Rural Crashes'),
+                 'Need Research (Driver): DUIs & Rural Crashes')
+
+mixedVarSim      
+bad.driving <- mixedVarSim(cluster_data$'Need Research (Driver): Aggressive Driving & Rural Crashes', cluster_data$'Need Research (Driver): Poor Driving & Rural Crashes')
+print(bad.driving)  
+
+      # distracted driving & non-use of safety equipment
+      distract.nonuse <- mixedVarSim(cluster_data$'Need Research (Driver): Distracted Driving & Rural Crashes', cluster_data$'Need Research (Driver): Non-Use of Safety Equipment & Rural Crashes')
+      print(distract.nonuse)
+
+      # distracted driving, non-use, & DUIs
+      
+
 
 
